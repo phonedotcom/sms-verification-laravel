@@ -1,0 +1,25 @@
+{
+  "name": "phonecom/sms-verification-laravel",
+  "description": "Provides endpoints for sending SMS to some phone number and it's verifying.",
+  "keywords": ["laravel", "laravel 5", "sms", "phone verification" ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Michael Kelner",
+      "email": "mkelner@phone.com",
+      "homepage": "https://www.phone.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.5",
+    "guzzlehttp/guzzle": "6.1.*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "4.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Phonedotcom\\SmsVerification\\": "src"
+    }
+  }
+}
