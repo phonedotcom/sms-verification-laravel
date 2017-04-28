@@ -5,7 +5,7 @@ return [
     /*
      * Register on Phone.com and fill this config with data you've got there:
      */
-    'phone-com-phone-number' => '', // Phone number you want to use for SMS sending
+    'phone-com-phone-number' => '', // Phone number you want to use for SMS sending (+1XXXXXXXXXX)
     'phone-com-access-token' => '', // Access Token for Phone.com API
     'phone-com-account-id' => '', // Phone.com account ID (number)
 

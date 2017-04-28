@@ -13,3 +13,9 @@ Run the command:
 ```
 php artisan vendor:publish --provider="Phonedotcom\SmsVerification\SmsVerificationProvider" --tag=config
 ```
+
+Add SMS Verification endpoints to your routing file:
+
+```
+\Phonedotcom\SmsVerification\SmsVerificationProvider::registerRoutes($router);
+```

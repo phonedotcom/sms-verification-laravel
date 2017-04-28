@@ -2,6 +2,9 @@
 
 namespace Phonedotcom\SmsVerification;
 
+use Illuminate\Support\Facades\Log;
+use Phonedotcom\SmsVerification\Exceptions\ValidationException;
+
 /**
  * Class SmsVerification
  * @package Phonedotcom\SmsVerification
@@ -12,11 +15,12 @@ class SmsVerification
     /**
      * Send code
      * @param $phoneNumber
-     * @return bool
+     * @return array
      */
     public static function sendCode($phoneNumber)
     {
         try {
+            static::validatePhoneNumber($phoneNumber);
             $code = CodeProcessor::getInstance()->generateCode($phoneNumber);
             $translationCode = config('sms-verification.message-translation-code');
             $text = $translationCode
@@ -27,29 +31,56 @@ class SmsVerification
             if (!($sender instanceof SenderInterface)){
                 throw new \Exception('Sender class ' . $senderClassName . ' doesn\'t implement SenderInterface');
             }
-            $result = $sender->send($phoneNumber, $text);
+            $success = $sender->send($phoneNumber, $text);
+            $description = $success ? 'OK' : 'Error';
         } catch (\Exception $e) {
-            Log::error('SMS Verification code sending was failed: ' . $e->getMessage());
-            $result = false;
+            $description = $e->getMessage();
+            if (!($e instanceof ValidationException)) {
+                Log::error('SMS Verification code sending was failed: ' . $description);
+            }
+            $success = false;
         }
-        return $result;
+        return ['success' => $success, 'description' => $description];
     }
 
     /**
      * Check code
      * @param $code
      * @param $phoneNumber
-     * @return bool
+     * @return array
      */
     public static function checkCode($code, $phoneNumber)
     {
         try {
-            $result = CodeProcessor::getInstance()->validateCode($code, $phoneNumber);
+            if (!is_numeric($code)){
+                throw new ValidationException('Incorrect code was provided');
+            }
+            static::validatePhoneNumber($phoneNumber);
+            $success = CodeProcessor::getInstance()->validateCode($code, $phoneNumber);
+            $description = $success ? 'OK' : 'Wrong code';
         } catch (\Exception $e) {
-            Log::error('SMS Verification check was failed: ' . $e->getMessage());
-            $result = false;
+            $description = $e->getMessage();
+            if (!($e instanceof ValidationException)) {
+                Log::error('SMS Verification check was failed: ' . $description);
+            }
+            $success = false;
         }
-        return $result;
+        return ['success' => $success, 'description' => $description];
+    }
+
+    /**
+     * Validate phone number
+     * @param string $phoneNumber
+     * @throws ValidationException
+     */
+    protected static function validatePhoneNumber($phoneNumber){
+        $patterns = [
+            "\+?1[2-9][0-9]{2}[2-9][0-9]{2}[0-9]{4}", // US
+            "\+?[2-9]\d{9,}", // International
+        ];
+        if (!@preg_match("/^(" . implode('|', $patterns) . ")\$/", $phoneNumber)) {
+            throw new ValidationException('Incorrect phone number was provided');
+        }
     }
 
 }

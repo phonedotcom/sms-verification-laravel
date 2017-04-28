@@ -77,9 +77,9 @@ class CodeProcessor
     {
         try {
             $code = rand(pow(10, $this->codeLength - 1), pow(10, $this->codeLength) - 1);
-            Cache::put($this->cachePrefix . $code, $phoneNumber, $this->minutesLifetime);
+            Cache::put($this->cachePrefix . $code, $this->trimPhoneNumber($phoneNumber), $this->minutesLifetime);
         } catch (\Exception $e){
-            throw new GenerateCodeException('Code generating was failed', 0, $e);
+            throw new GenerateCodeException('Code generation failed', 0, $e);
         }
         return $code;
     }
@@ -95,14 +95,22 @@ class CodeProcessor
     {
         try {
             $codeValue = Cache::get($this->cachePrefix . $code);
-            if ($codeValue && ($codeValue == $phoneNumber)){
+            if ($codeValue && ($codeValue == $this->trimPhoneNumber($phoneNumber))){
                 Cache::forget($this->cachePrefix . $code);
                 return true;
             }
         } catch (\Exception $e){
-            throw new ValidateCodeException('Code validating was failed', 0, $e);
+            throw new ValidateCodeException('Code validation failed', 0, $e);
         }
         return false;
+    }
+
+    /**
+     * @param $phoneNumber
+     * @return string
+     */
+    private function trimPhoneNumber($phoneNumber){
+        return trim($phoneNumber, ltrim($phoneNumber, '+'));
     }
 
 }

@@ -2,6 +2,7 @@
 
 namespace Phonedotcom\SmsVerification;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -31,7 +32,7 @@ class SmsVerificationProvider extends ServiceProvider
     {
         if ($this->isLumen() === false) {
             $this->publishes([
-                __DIR__ . '/../config/sms-verifications.php' => config_path('sms-verifications.php'),
+                __DIR__ . '/../config/sms-verification.php' => config_path('sms-verification.php'),
             ], 'config');
         }
     }
@@ -53,14 +54,10 @@ class SmsVerificationProvider extends ServiceProvider
     public static function registerRoutes($router)
     {
         $router->post('/sms-verification', function (Request $request) {
-            return response()->json([
-                'success' => SmsVerification::sendCode($request->input('phone_number'))
-            ]);
+            return response()->json(SmsVerification::sendCode($request->input('phone_number')));
         });
         $router->get('/sms-verification/{code}/{number}', function ($code, $phoneNumber) {
-            return response()->json([
-                'success' => SmsVerification::checkCode($code, $phoneNumber)
-            ]);
+            return response()->json(SmsVerification::checkCode($code, $phoneNumber));
         });
     }
 
