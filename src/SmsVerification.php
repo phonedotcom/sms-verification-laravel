@@ -2,32 +2,12 @@
 
 namespace Phonedotcom\SmsVerification;
 
-use Illuminate\Http\Request;
-
 /**
  * Class SmsVerification
  * @package Phonedotcom\SmsVerification
  */
 class SmsVerification
 {
-
-    /**
-     * Register endpoints in routing
-     * @param $router
-     */
-    public static function registerRoutes($router)
-    {
-        $router->post('/sms-verification', function (Request $request) {
-            return response()->json([
-                'success' => self::sendCode($request->input('phone_number'))
-            ]);
-        });
-        $router->get('/sms-verification/{code}/{number}', function ($code, $phoneNumber) {
-            return response()->json([
-                'success' => self::checkCode($code, $phoneNumber)
-            ]);
-        });
-    }
 
     /**
      * Send code
@@ -42,7 +22,12 @@ class SmsVerification
             $text = $translationCode
                 ? trans($translationCode, ['code' => $code])
                 : 'SMS verification code: ' . $code;
-            $result = Sender::getInstance()->send($phoneNumber, $text);
+            $senderClassName = config('sms-verification.sender-class', Sender::class);
+            $sender = $senderClassName::getInstance();
+            if (!($sender instanceof SenderInterface)){
+                throw new \Exception('Sender class ' . $senderClassName . ' doesn\'t implement SenderInterface');
+            }
+            $result = $sender->send($phoneNumber, $text);
         } catch (\Exception $e) {
             Log::error('SMS Verification code sending was failed: ' . $e->getMessage());
             $result = false;

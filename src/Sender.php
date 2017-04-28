@@ -9,7 +9,7 @@ use Phonedotcom\SmsVerification\Exceptions\SenderException;
  * Class Sender
  * @package Phonedotcom\SmsVerification
  */
-class Sender
+class Sender implements SenderInterface
 {
 
     /**
@@ -75,7 +75,7 @@ class Sender
         if (empty($this->accessToken)) {
             throw new ConfigException('Phone.com Access Token is not specified in config/sms-verification.php');
         }
-        $this->url = rtrim(config('sms-verification.phone-com-api-url'), '/');
+        $this->url = rtrim(config('sms-verification.phone-com-api-url', 'https://api.phone.com/v4'), '/');
         if (empty($this->url)) {
             throw new ConfigException('Phone.com API URL is not specified in config/sms-verification.php');
         }
@@ -91,7 +91,9 @@ class Sender
     }
 
     /**
-     * Send SMS via Phone.com API
+     * Send SMS via Phone.com AP
+     * @param string $to
+     * @param string $text
      * @return bool
      * @throws SenderException
      */

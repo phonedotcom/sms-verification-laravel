@@ -60,7 +60,7 @@ class CodeProcessor
         if (empty($this->codeLength) || !is_int($this->codeLength)) {
             throw new ConfigException('Incorrect code length was specified in config/sms-verification.php');
         }
-        $this->minutesLifetime = config('sms-verification.code-length', $this->minutesLifetime);
+        $this->minutesLifetime = config('sms-verification.code-lifetime', $this->minutesLifetime);
         if (empty($this->minutesLifetime) || !is_int($this->minutesLifetime)) {
             throw new ConfigException('Incorrect code lifetime was specified in config/sms-verification.php');
         }
