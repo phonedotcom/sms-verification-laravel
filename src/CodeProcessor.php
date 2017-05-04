@@ -76,7 +76,11 @@ class CodeProcessor
     public function generateCode($phoneNumber)
     {
         try {
-            $code = rand(pow(10, $this->codeLength - 1), pow(10, $this->codeLength) - 1);
+            $randomFunction = 'random_int'; // This function is better, but it was added in PHP7
+            if (!function_exists($randomFunction)){
+                $randomFunction = 'mt_rand';
+            }
+            $code = $randomFunction(pow(10, $this->codeLength - 1), pow(10, $this->codeLength) - 1);
             Cache::put($this->cachePrefix . $code, $this->trimPhoneNumber($phoneNumber), $this->minutesLifetime);
         } catch (\Exception $e){
             throw new GenerateCodeException('Code generation failed', 0, $e);
