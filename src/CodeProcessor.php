@@ -114,7 +114,7 @@ class CodeProcessor
      * @return string
      */
     private function trimPhoneNumber($phoneNumber){
-        return trim($phoneNumber, ltrim($phoneNumber, '+'));
+        return trim(ltrim($phoneNumber, '+'));
     }
 
 }
