@@ -1,4 +1,13 @@
-Once installed you need to register the service provider. Open `config/app.php` and find the `providers` key.
+![alt text](https://avatars0.githubusercontent.com/u/13040900?v=3&s=100)
+
+This library contains a set of two simple server endpoints for doing phone number verification via SMS.
+
+SMS is done via phone.com API and in fact this code is intended to demonstrate real world use-case for using the phone.com API. All available Phone.com API's are defined at https://apidocs.phone.com.
+
+Server is written in PHP using the Laravel framework.
+
+
+Once this library is installed you need to register the service provider. Open `config/app.php` and find the `providers` key.
 
 ```
 'providers' => [
