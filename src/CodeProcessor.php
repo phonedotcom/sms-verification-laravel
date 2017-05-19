@@ -117,4 +117,11 @@ class CodeProcessor
         return trim(ltrim($phoneNumber, '+'));
     }
 
+    /**
+     * @return int Seconds
+     */
+    public function getLifetime(){
+        return $this->minutesLifetime * 60;
+    }
+
 }

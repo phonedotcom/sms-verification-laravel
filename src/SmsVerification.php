@@ -21,8 +21,10 @@ class SmsVerification
     public static function sendCode($phoneNumber)
     {
         $exceptionClass = null;
+        $expiresAt = null;
         try {
             static::validatePhoneNumber($phoneNumber);
+            $now = time();
             $code = CodeProcessor::getInstance()->generateCode($phoneNumber);
             $translationCode = config('sms-verification.message-translation-code');
             $text = $translationCode
@@ -35,6 +37,9 @@ class SmsVerification
             }
             $success = $sender->send($phoneNumber, $text);
             $description = $success ? 'OK' : 'Error';
+            if ($success){
+                $expiresAt = $now + CodeProcessor::getInstance()->getLifetime();
+            }
         } catch (\Exception $e) {
             $description = $e->getMessage();
             if (!($e instanceof ValidationException)) {
@@ -47,6 +52,9 @@ class SmsVerification
         $response = ['success' => $success, 'description' => $description];
         if ($exceptionClass){
             $response['exception'] = $exceptionClass;
+        }
+        if ($expiresAt){
+            $response['expires_at'] = $expiresAt;
         }
         return $response;
     }

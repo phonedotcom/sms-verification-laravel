@@ -37,12 +37,12 @@ Add SMS Verification endpoints to your routing file:
 
 For example, if an app wants to send an authorization code to a cell phone 855-123-8765
 
-1.  Send a POST `/sms-verification` API to URL https://api.example.com/sms-verification with JSON body `{ "phone_number" : "+18551238765" }`
-2.  The API returns `{"success":true,"description":"OK"}` if the code is sent
+1.  Send a POST `/sms-verification` API to URL https://api.example.com/sms-verification with JSON body `{"phone_number" : "+18551238765"}`
+2.  The API returns `{"success":true,"description":"OK","expires_at": 1495120612}` if the code is sent. `expires_at` is actual time of code expiration.
 3.  The cell phone will receive a 6-digit code (for example: 782025)
 4.  In order to verify the code, send a Get /sms-verification API to `https://api.example.com/sms-verification/782025/+18551238765`      
 5.  The API returns:
-    * On success: `{"success":true,"description":"OK"}`
+    * On success: `{"success":true,"description":"OK","expires_at": 1495120612}`
     * On failure: `{"success":false,"description":"Wrong code"}`
 
 ### Exceptions
