@@ -3,6 +3,7 @@
 namespace Phonedotcom\SmsVerification;
 
 use Illuminate\Support\Facades\Log;
+use Phonedotcom\SmsVerification\Exceptions\SmsVerificationException;
 use Phonedotcom\SmsVerification\Exceptions\ValidationException;
 
 /**
@@ -19,6 +20,7 @@ class SmsVerification
      */
     public static function sendCode($phoneNumber)
     {
+        $exceptionClass = null;
         try {
             static::validatePhoneNumber($phoneNumber);
             $code = CodeProcessor::getInstance()->generateCode($phoneNumber);
@@ -39,8 +41,14 @@ class SmsVerification
                 Log::error('SMS Verification code sending was failed: ' . $description);
             }
             $success = false;
+            $exceptionClass = ($e instanceof SmsVerificationException)
+                ? str_replace('Phonedotcom\\SmsVerification\\Exceptions\\', '', get_class($e))
+                : 'RuntimeException';        }
+        $response = ['success' => $success, 'description' => $description];
+        if ($exceptionClass){
+            $response['exception'] = $exceptionClass;
         }
-        return ['success' => $success, 'description' => $description];
+        return $response;
     }
 
     /**
@@ -51,6 +59,7 @@ class SmsVerification
      */
     public static function checkCode($code, $phoneNumber)
     {
+        $exceptionClass = null;
         try {
             if (!is_numeric($code)){
                 throw new ValidationException('Incorrect code was provided');
@@ -64,8 +73,15 @@ class SmsVerification
                 Log::error('SMS Verification check was failed: ' . $description);
             }
             $success = false;
+            $exceptionClass = ($e instanceof SmsVerificationException)
+                ? str_replace('Phonedotcom\\SmsVerification\\Exceptions\\', '', get_class($e))
+                : 'RuntimeException';
         }
-        return ['success' => $success, 'description' => $description];
+        $response = ['success' => $success, 'description' => $description];
+        if ($exceptionClass){
+            $response['exception'] = $exceptionClass;
+        }
+        return $response;
     }
 
     /**
