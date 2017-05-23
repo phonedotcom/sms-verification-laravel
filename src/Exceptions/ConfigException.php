@@ -7,4 +7,10 @@ namespace Phonedotcom\SmsVerification\Exceptions;
  * Class ConfigException
  * @package Phonedotcom\SmsVerification\Exceptions
  */
-class ConfigException extends SmsVerificationException {}
+class ConfigException extends SmsVerificationException {
+
+    public function getErrorCode(){
+        return 200 + min($this->getCode(), 99);
+    }
+
+}

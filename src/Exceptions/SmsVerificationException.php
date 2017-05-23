@@ -7,4 +7,8 @@ namespace Phonedotcom\SmsVerification\Exceptions;
  * Class SmsVerificationException
  * @package Phonedotcom\SmsVerification\Exceptions
  */
-abstract class SmsVerificationException extends \RuntimeException {}
+abstract class SmsVerificationException extends \RuntimeException {
+
+    abstract public function getErrorCode();
+
+}

@@ -21,4 +21,8 @@ class SenderException extends SmsVerificationException {
         return $this->httpResult;
     }
 
+    public function getErrorCode(){
+        return 400 + min($this->getCode(), 99);
+    }
+
 }

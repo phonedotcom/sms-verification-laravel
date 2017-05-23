@@ -45,16 +45,16 @@ For example, if an app wants to send an authorization code to a cell phone 855-1
     * On success: `{"success":true,"description":"OK","expires_at": 1495120612}`
     * On failure: `{"success":false,"description":"Wrong code"}`
 
-### Exceptions
+### Errors
 
-If an exception was thrown during the SMS verification process, output contains field `exception`.
+If an exception was thrown during the SMS verification process, output contains field `error`.
 
-* `ConfigException` - something is not configured
-* `ValidationException` - input format validation was failed
-* `GenerateCodeException` - code generating exception
-* `SenderException` - code sending exception 
-* `ValidateCodeException` - code validation exception
-* `RuntimeException` - any other server exception, not related to SMS Verification library
+* `1XX` - code validation error
+* `2XX` - something is not configured
+* `3XX` - input format validation was failed
+* `5XX` - code generating error
+* `4XX` - code sending error 
+* `999` - any other server error, not related to SMS Verification library
 
 ### Notes
 1.  The authorization code sent is only valid for 10 minutes

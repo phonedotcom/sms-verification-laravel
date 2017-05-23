@@ -22,6 +22,7 @@ class SmsVerification
     {
         $exceptionClass = null;
         $expiresAt = null;
+        $response = [];
         try {
             static::validatePhoneNumber($phoneNumber);
             $now = time();
@@ -38,7 +39,7 @@ class SmsVerification
             $success = $sender->send($phoneNumber, $text);
             $description = $success ? 'OK' : 'Error';
             if ($success){
-                $expiresAt = $now + CodeProcessor::getInstance()->getLifetime();
+                $response['expires_at'] = $now + CodeProcessor::getInstance()->getLifetime();
             }
         } catch (\Exception $e) {
             $description = $e->getMessage();
@@ -46,16 +47,10 @@ class SmsVerification
                 Log::error('SMS Verification code sending was failed: ' . $description);
             }
             $success = false;
-            $exceptionClass = ($e instanceof SmsVerificationException)
-                ? str_replace('Phonedotcom\\SmsVerification\\Exceptions\\', '', get_class($e))
-                : 'RuntimeException';        }
-        $response = ['success' => $success, 'description' => $description];
-        if ($exceptionClass){
-            $response['exception'] = $exceptionClass;
+            $response['error'] = ($e instanceof SmsVerificationException) ? $e->getErrorCode() : 999;
         }
-        if ($expiresAt){
-            $response['expires_at'] = $expiresAt;
-        }
+        $response['success'] = $success;
+        $response['description'] = $description;
         return $response;
     }
 
@@ -68,6 +63,7 @@ class SmsVerification
     public static function checkCode($code, $phoneNumber)
     {
         $exceptionClass = null;
+        $response = [];
         try {
             if (!is_numeric($code)){
                 throw new ValidationException('Incorrect code was provided');
@@ -81,14 +77,10 @@ class SmsVerification
                 Log::error('SMS Verification check was failed: ' . $description);
             }
             $success = false;
-            $exceptionClass = ($e instanceof SmsVerificationException)
-                ? str_replace('Phonedotcom\\SmsVerification\\Exceptions\\', '', get_class($e))
-                : 'RuntimeException';
+            $response['error'] = ($e instanceof SmsVerificationException) ? $e->getErrorCode() : 999;
         }
-        $response = ['success' => $success, 'description' => $description];
-        if ($exceptionClass){
-            $response['exception'] = $exceptionClass;
-        }
+        $response['success'] = $success;
+        $response['description'] = $description;
         return $response;
     }
 

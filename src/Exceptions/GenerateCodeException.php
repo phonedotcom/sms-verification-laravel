@@ -7,4 +7,10 @@ namespace Phonedotcom\SmsVerification\Exceptions;
  * Class GenerateCodeException
  * @package Phonedotcom\SmsVerification\Exceptions
  */
-class GenerateCodeException extends SmsVerificationException {}
+class GenerateCodeException extends SmsVerificationException {
+
+    public function getErrorCode(){
+        return 500 + min($this->getCode(), 99);
+    }
+
+}
